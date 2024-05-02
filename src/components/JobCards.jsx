@@ -86,10 +86,10 @@ function JobCards() {
   };
   return (
     <div>
-      <h2 className="flex align-middle justify-center underline mt-5">
+      <h2 className="flex align-middle justify-center underline mt-5 text-2xl">
         Search Jobs
       </h2>
-      <div className="mt-5 flex align-middle flex-wrap justify-center gap-5 mx-32">
+      <div className="my-5 flex align-middle flex-wrap justify-center gap-5 mx-32">
         
         <Roles filters={filters}  setFilters={setFilters}/>
         <Experiences filters={filters}  setFilters={setFilters}/>
