@@ -3,6 +3,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useState, useEffect } from "react";
 import Loading from "./Loading";
 import Modal from "./Modal";
+import { Roles , Experiences , Location , MinBasePay } from "./Dropdown";
 
 const fetchData = async (filters, offset) => {
   const myHeaders = new Headers();
@@ -36,12 +37,36 @@ const fetchData = async (filters, offset) => {
 function JobCards() {
   const [items, setItems] = useState([]);
   const [offset, setOffset] = useState(0);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [filters, setFilters] = useState({
+    minExperience: [],
+    companyName: "",
+    location: [],
+    techStack: [],
+    role: [],
+    minBasePay: [],
+  });
 
   useEffect(() => {
     fetchData(0).then((data) => {
       setItems(data.jdList);
     });
   }, []);
+
+  useEffect(() => {
+    console.log("Filters changed:", filters);
+    const filtered = items.filter(item => {
+      // Apply filter conditions here based on filter state
+      return (
+        (filters.role.length === 0 || filters.role.includes(item.jobRole)) &&
+        (filters.minExperience.length === 0 || (filters.minExperience[0]>=item.minExp && filters.minExperience[0]<=item.maxExp)) &&
+        (filters.location.length === 0 || (filters.location[0] === "remote" ? filters.location[0]===(item.location) : filters.location[0] != "remote")) &&
+        (filters.minBasePay.length === 0 || (filters.minBasePay[0]>=item.minBasePay && filters.minBasePay[0]<=item.maxBasePay) )
+      );
+    });
+
+    setFilteredItems(filtered);
+  }, [items, filters]);
 
   const fetchMoreData = () => {
     fetchData(offset + 28).then((data) => {
@@ -50,24 +75,6 @@ function JobCards() {
     });
   };
 
-  const [filters, setFilters] = useState({
-    minExperience: "",
-    companyName: "",
-    location: "",
-    remote: "",
-    techStack: "",
-    role: "",
-    minBasePay: "",
-  });
-
-  // Function to handle changes in filters
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilters({
-      ...filters,
-      [name]: value,
-    });
-  };
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const closeModal = () => {
@@ -82,16 +89,15 @@ function JobCards() {
       <h2 className="flex align-middle justify-center underline mt-5">
         Search Jobs
       </h2>
-      <div className="flex align-middle justify-center">
-        {/* FILTER content goes here
-        Filters: Implement filters to allow users to refine the job listings based on:
-        Min experience
-        Company name
-        Location
-        Remote/on-site
-        Tech stack
-        Role
-        Min base pay */}
+      <div className="mt-5 flex align-middle flex-wrap justify-center gap-5 mx-32">
+        
+        <Roles filters={filters}  setFilters={setFilters}/>
+        <Experiences filters={filters}  setFilters={setFilters}/>
+        <Location filters={filters}  setFilters={setFilters}/>
+        <MinBasePay filters={filters}  setFilters={setFilters}/>
+        {/*<TechStack/>
+        <CompanyName/> */}
+
       </div>
       <div className="flex justify-center">
         <InfiniteScroll
@@ -101,14 +107,9 @@ function JobCards() {
           loader={<Loading />}
         >
           <div className="items-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
-            {/* Job title
-            Company name
-            Location
-            Job description (limited to a certain number of characters with an option to expand)
-            Experience required
-            Apply button/link */}
 
-            {items.map((item, index) => (
+
+            {filteredItems.map((item, index) => (
               <div
                 className="m-5 w-[300px] rounded-lg border  shadow-md hover:scale-105 transition-all duration-100"
                 key={index}

@@ -8,7 +8,7 @@ const Modal = ({ id, title, content, onClose }) => {
           <h2 className="text-lg font-bold">{title}</h2>
           <button className="text-gray-600 hover:text-gray-800" onClick={onClose}>Close</button>
         </div>
-        <div className="mt-4 w-[200px] h-[300px] lg:w-[1000px] overflow-y-auto">
+        <div className="mt-4 w-[300px] h-[400px] lg:w-[1000px] overflow-y-auto">
           {content}
         </div>
       </div>
